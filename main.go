@@ -97,7 +97,7 @@ func main() {
 
 		writeData(writer, result)
 
-		if k > TOTAL_DATA-1 {
+		if k >= TOTAL_DATA-1 {
 			break
 		}
 	}
