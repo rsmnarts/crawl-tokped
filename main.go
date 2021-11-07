@@ -70,6 +70,8 @@ func main() {
 
 	var writer = csv.NewWriter(csvFile)
 
+	writeHeader(writer)
+
 	for k, n := range links {
 		l, err := url.ParseRequestURI(n)
 		if err != nil {
@@ -93,23 +95,41 @@ func main() {
 		result.Rating = extractNumberStr(result.Rating, ".")
 		result.Desc = url.QueryEscape(result.Desc)
 
-		results := []string{
-			result.NameOfProduct,
-			result.Desc,
-			result.ImageLink,
-			result.Price,
-			result.Rating,
-			result.MerchantName,
-		}
-		if err := writer.Write(results); err != nil {
-			log.Println("Write CSV Error:", err)
-		}
+		writeData(writer, result)
 
-		if k >= TOTAL_DATA {
+		if k > TOTAL_DATA-1 {
 			break
 		}
 	}
 	writer.Flush()
+}
+
+func writeHeader(writer *csv.Writer) {
+	results := []string{
+		"name",
+		"desc",
+		"image_link",
+		"price",
+		"rating",
+		"merchant_name",
+	}
+	if err := writer.Write(results); err != nil {
+		log.Println("Write CSV Error:", err)
+	}
+}
+
+func writeData(writer *csv.Writer, result data) {
+	results := []string{
+		result.NameOfProduct,
+		result.Desc,
+		result.ImageLink,
+		result.Price,
+		result.Rating,
+		result.MerchantName,
+	}
+	if err := writer.Write(results); err != nil {
+		log.Println("Write CSV Error:", err)
+	}
 }
 
 func getLinks(ctx context.Context, page, min int, firstPage bool) (out []string) {
